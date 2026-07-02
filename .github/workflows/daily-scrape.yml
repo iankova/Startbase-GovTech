@@ -1,0 +1,59 @@
+name: Daily Startbase Scrape
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repo auschecken
+        uses: actions/checkout@v4
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Python-Abhängigkeiten installieren
+        run: pip install -r requirements.txt
+
+      - name: Playwright-Browser installieren
+        run: playwright install --with-deps chromium
+
+      - name: Ollama installieren
+        run: curl -fsSL https://ollama.com/install.sh | sh
+
+      - name: Ollama starten und Modell laden
+        run: |
+          ollama serve &
+          sleep 5
+          ollama pull llama3.1:8b
+
+      - name: Google-Zugangsdaten aus Secret wiederherstellen
+        run: echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT }}" > service_account.json
+
+      - name: Sheet-URL aus Secret wiederherstellen
+        run: echo "${{ secrets.GOOGLE_SHEET_URL }}" > sheet_url.txt
+
+      - name: Scraper ausführen
+        run: python startbase_scraper.py
+
+      - name: Mit Google Sheets synchronisieren
+        run: python sync_to_sheets.py
+
+      - name: Aktualisierte Datenbank zurück ins Repo committen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add startups.db
+          git diff --staged --quiet || git commit -m "Automatisches Update: startups.db"
+          git push
+          git add .github/workflows/daily-scrape.yml
+git commit -m "Add GitHub Actions workflow"
+git push

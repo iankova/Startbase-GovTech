@@ -1,7 +1,6 @@
 venv/
 __pycache__/
 *.pyc
-startups.db
 log.txt
 service_account.json
 sheet_url.txt
