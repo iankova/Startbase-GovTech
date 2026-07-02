@@ -54,6 +54,3 @@ jobs:
           git add startups.db
           git diff --staged --quiet || git commit -m "Automatisches Update: startups.db"
           git push
-          git add .github/workflows/daily-scrape.yml
-git commit -m "Add GitHub Actions workflow"
-git push
