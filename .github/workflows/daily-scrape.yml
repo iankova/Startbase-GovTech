@@ -52,17 +52,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add startups.db
-<<<<<<< HEAD
           if git diff --cached --quiet; then
             echo "Keine Änderungen an startups.db"
           else
             git commit -m "Automatisches Update: startups.db"
             git push
           fi
-=======
-          git diff --staged --quiet || git commit -m "Automatisches Update: startups.db"
-          git push
-          git add .github/workflows/daily-scrape.yml
-          git commit -m "Fix YAML indentation"
-          git push
->>>>>>> 17fc37c2158f8665c3c865098df1730680e41f82
+        
